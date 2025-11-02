@@ -11,6 +11,13 @@ const messageSchema = new mongoose.Schema({
     required: true,
     enum: ['text', 'image', 'audio', 'video', 'location', 'document', 'link']
   },
+
+
+    role: { type: String, enum: ['driver',"user", 'admin'], default: 'user' },
+  isOnline: { type: Boolean, default: false },
+
+
+
   content: {
     type: String,
     required: true

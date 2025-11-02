@@ -16,7 +16,7 @@ const generateToken = (userId) => {
 // @route   POST /api/auth/login
 router.post('/login', async (req, res) => {
   try {
-    const { mobile, password } = req.body;
+    const { mobile,isDriver=false,fcmToken=null,  role="user",  password } = req.body;
 
     if (!mobile || !password) {
       return res.status(400).json({
@@ -39,11 +39,16 @@ router.post('/login', async (req, res) => {
         });
       }
 
+
+await User.findByIdAndUpdate(user._id,{
+  fcmToken,role
+})
+
       // Check if user needs to complete profile
       if (user.isNewUser) {
         return res.json({
-          success: true,
-          isNewUser: true,
+          success: true,isDriver,
+          isNewUser: true,role,
           mobile: user.mobile,
           message: 'Please complete your profile'
         });
@@ -56,8 +61,8 @@ router.post('/login', async (req, res) => {
         success: true,
         isNewUser: false,
         token,
-        user: {
-          id: user._id,
+        user: {isDriver,
+          id: user._id,role,
           name: user.name,
           mobile: user.mobile,
           createdAt: user.createdAt
@@ -66,16 +71,16 @@ router.post('/login', async (req, res) => {
     } else {
       // New user - create with default password
       user = new User({
-        mobile,
-        password,
+        mobile,isDriver,fcmToken,
+        password,role,
         isNewUser: true
       });
 
       await user.save();
 
       res.json({
-        success: true,
-        isNewUser: true,
+        success: true,isDriver,
+        isNewUser: true,role,
         mobile: user.mobile,
         message: 'Please complete your profile'
       });
@@ -135,6 +140,7 @@ router.post('/complete-profile', async (req, res) => {
       success: true,
       token,
       user: {
+        isDriver:user.isDriver,
         id: user._id,
         name: user.name,
         mobile: user.mobile,

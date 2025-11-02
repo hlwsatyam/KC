@@ -18,6 +18,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  fcmToken: {
+    type: String,
+    
+  },
+  isDriver: {
+    type: Boolean,
+    default: false
+  },
+  isOnline: {
+    type: Boolean,
+    default: false
+  },
   isNewUser: {
     type: Boolean,
     default: true
